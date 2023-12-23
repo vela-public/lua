@@ -8,7 +8,7 @@ import __yyfmt__ "fmt"
 //line parser.go.y:2
 
 import (
-	"github.com/vela-ssoc/vela-kit/lua/ast"
+	"github.com/vela-public/lua/ast"
 )
 
 //line parser.go.y:34

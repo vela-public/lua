@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/vela-ssoc/vela-kit/lua/parse"
+	"github.com/vela-public/lua/parse"
 )
 
 const MultRet = -1

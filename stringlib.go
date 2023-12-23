@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/vela-ssoc/vela-kit/lua/pm"
+	"github.com/vela-public/lua/pm"
 )
 
 const emptyLString LString = LString("")

@@ -2,8 +2,8 @@
 
 ```go
     
-    // 创建虚拟机
-	co := lua.NewState()
+    // 创建虚拟机 
+    co := lua.NewState()
     co.OpenLibs()
 	co.dofile("test.lua")
     co.SetGlobal("a", 1)

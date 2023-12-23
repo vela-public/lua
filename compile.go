@@ -5,7 +5,7 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/vela-ssoc/vela-kit/lua/ast"
+	"github.com/vela-public/lua/ast"
 )
 
 /* internal constants & structs  {{{ */

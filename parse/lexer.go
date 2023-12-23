@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vela-ssoc/vela-kit/lua/ast"
+	"github.com/vela-public/lua/ast"
 )
 
 const EOF = -1

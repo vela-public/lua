@@ -1,7 +1,7 @@
 package lua
 
 import (
-	"github.com/vela-ssoc/vela-kit/grep"
+	"github.com/vela-public/grep"
 	"sync"
 )
 
