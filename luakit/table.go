@@ -14,3 +14,12 @@ func IntOr(tab *lua.LTable, key string, d int) int {
 		return d
 	}
 }
+
+func StringOr(tab *lua.LTable, key string, d string) string {
+	lv := tab.RawGetString(key)
+	if lv == lua.LNil {
+		return d
+	}
+
+	return lv.String()
+}
