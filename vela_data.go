@@ -100,7 +100,7 @@ func (vd *VelaData) Type() LValueType                   { return LTVelaData }
 func (vd *VelaData) AssertFloat64() (float64, bool)     { return 0, false }
 func (vd *VelaData) AssertString() (string, bool)       { return "", false }
 func (vd *VelaData) AssertFunction() (*LFunction, bool) { return nil, false }
-func (vd *VelaData) Peek() LValue                       { return vd }
+func (vd *VelaData) Hijack(fsm *CallFrameFSM) bool      { return false }
 
 func (vd *VelaData) Close() error {
 	if vd.Data == nil {

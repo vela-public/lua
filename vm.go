@@ -30,8 +30,8 @@ func mainLoop(L *LState, baseframe *callFrame) {
 		inst = cf.Fn.Proto.Code[cf.Pc]
 		cf.Pc++
 		op = int(inst >> 26)
-		hook := interceptorTable(op)
-		if hook(L, inst, baseframe) {
+
+		if HijackTable(&CallFrameFSM{co: L, op: op, inst: inst, base: baseframe}) {
 			continue
 		}
 
@@ -66,11 +66,9 @@ func mainLoopWithContext(L *LState, baseframe *callFrame) {
 			return
 		default:
 			op = int(inst >> 26)
-			hook := interceptorTable(op)
-			if hook(L, inst, baseframe) {
+			if HijackTable(&CallFrameFSM{co: L, op: op, inst: inst, base: baseframe}) {
 				continue
 			}
-
 			if jumpTable[op](L, inst, baseframe) == 1 {
 				return
 			}

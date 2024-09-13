@@ -33,9 +33,10 @@ const (
 	LTGoFuncErr
 	LTGoFuncStr
 	LTGoFuncInt
+	LTGeneric
 )
 
-var lValueNames = [...]string{"nil", "boolean", "number", "int", "uint", "int64", "uint64", "string", "function", "userdata", "thread", "table", "channel", "veladata", "slice", "safe_map", "kv", "safe_kv", "AnyData", "object", "GoFunction", "GoFuncErr", "GoFuncStr", "GoFuncInt"}
+var lValueNames = [...]string{"nil", "boolean", "number", "int", "uint", "int64", "uint64", "string", "function", "userdata", "thread", "table", "channel", "veladata", "slice", "safe_map", "kv", "safe_kv", "AnyData", "object", "GoFunction", "GoFuncErr", "GoFuncStr", "GoFuncInt", "generic"}
 
 func (vt LValueType) String() string {
 	return lValueNames[int(vt)]
@@ -50,8 +51,7 @@ type LValue interface {
 	AssertString() (string, bool)
 	// to reduce `runtime.assertI2T2` costs, this method should be used instead of the type assertion in heavy paths(typically inside the VM).
 	AssertFunction() (*LFunction, bool)
-
-	Peek() LValue
+	Hijack(*CallFrameFSM) bool
 }
 
 // LVIsFalse returns true if a given LValue is a nil or false otherwise false.
@@ -103,6 +103,7 @@ func (nl *LNilType) AssertFloat64() (float64, bool)     { return 0, false }
 func (nl *LNilType) AssertString() (string, bool)       { return "", false }
 func (nl *LNilType) AssertFunction() (*LFunction, bool) { return nil, false }
 func (nl *LNilType) Peek() LValue                       { return nl }
+func (nl *LNilType) Hijack(*CallFrameFSM) bool          { return false }
 
 var LNil = LValue(&LNilType{})
 
@@ -119,6 +120,7 @@ func (bl LBool) AssertFloat64() (float64, bool)     { return 0, false }
 func (bl LBool) AssertString() (string, bool)       { return "", false }
 func (bl LBool) AssertFunction() (*LFunction, bool) { return nil, false }
 func (bl LBool) Peek() LValue                       { return bl }
+func (bl LBool) Hijack(*CallFrameFSM) bool          { return false }
 
 var LTrue = LBool(true)
 var LFalse = LBool(false)
@@ -130,7 +132,7 @@ func (st LString) Type() LValueType                   { return LTString }
 func (st LString) AssertFloat64() (float64, bool)     { return 0, false }
 func (st LString) AssertString() (string, bool)       { return string(st), true }
 func (st LString) AssertFunction() (*LFunction, bool) { return nil, false }
-func (st LString) Peek() LValue                       { return st }
+func (st LString) Hijack(*CallFrameFSM) bool          { return false }
 
 // fmt.Formatter interface
 func (st LString) Format(f fmt.State, c rune) {
@@ -157,7 +159,7 @@ func (nm LNumber) Type() LValueType                   { return LTNumber }
 func (nm LNumber) AssertFloat64() (float64, bool)     { return float64(nm), true }
 func (nm LNumber) AssertString() (string, bool)       { return "", false }
 func (nm LNumber) AssertFunction() (*LFunction, bool) { return nil, false }
-func (nm LNumber) Peek() LValue                       { return nm }
+func (nm LNumber) Hijack(*CallFrameFSM) bool          { return false }
 
 // fmt.Formatter interface
 func (nm LNumber) Format(f fmt.State, c rune) {
@@ -194,7 +196,7 @@ func (tb *LTable) Type() LValueType                   { return LTTable }
 func (tb *LTable) AssertFloat64() (float64, bool)     { return 0, false }
 func (tb *LTable) AssertString() (string, bool)       { return "", false }
 func (tb *LTable) AssertFunction() (*LFunction, bool) { return nil, false }
-func (tb *LTable) Peek() LValue                       { return tb }
+func (tb *LTable) Hijack(*CallFrameFSM) bool          { return false }
 
 type LFunction struct {
 	IsG       bool
@@ -210,7 +212,7 @@ func (fn *LFunction) Type() LValueType                   { return LTFunction }
 func (fn *LFunction) AssertFloat64() (float64, bool)     { return 0, false }
 func (fn *LFunction) AssertString() (string, bool)       { return "", false }
 func (fn *LFunction) AssertFunction() (*LFunction, bool) { return fn, true }
-func (fn *LFunction) Peek() LValue                       { return fn }
+func (fn *LFunction) Hijack(*CallFrameFSM) bool          { return false }
 
 type Global struct {
 	MainThread    *LState
@@ -252,7 +254,7 @@ func (ls *LState) Type() LValueType                   { return LTThread }
 func (ls *LState) AssertFloat64() (float64, bool)     { return 0, false }
 func (ls *LState) AssertString() (string, bool)       { return "", false }
 func (ls *LState) AssertFunction() (*LFunction, bool) { return nil, false }
-func (ls *LState) Peek() LValue                       { return ls }
+func (ls *LState) Hijack(*CallFrameFSM) bool          { return false }
 
 type LUserData struct {
 	Value     interface{}
@@ -265,7 +267,7 @@ func (ud *LUserData) Type() LValueType                   { return LTUserData }
 func (ud *LUserData) AssertFloat64() (float64, bool)     { return 0, false }
 func (ud *LUserData) AssertString() (string, bool)       { return "", false }
 func (ud *LUserData) AssertFunction() (*LFunction, bool) { return nil, false }
-func (ud *LUserData) Peek() LValue                       { return ud }
+func (ud *LUserData) Hijack(*CallFrameFSM) bool          { return false }
 
 type LChannel chan LValue
 
@@ -274,4 +276,4 @@ func (ch LChannel) Type() LValueType                   { return LTChannel }
 func (ch LChannel) AssertFloat64() (float64, bool)     { return 0, false }
 func (ch LChannel) AssertString() (string, bool)       { return "", false }
 func (ch LChannel) AssertFunction() (*LFunction, bool) { return nil, false }
-func (ch LChannel) Peek() LValue                       { return ch }
+func (ch LChannel) Hijack(*CallFrameFSM) bool          { return false }

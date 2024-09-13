@@ -105,13 +105,6 @@ func (tb *LTable) Array() []LValue {
 	return tb.array
 }
 
-func (tb *LTable) ToMap() *Map {
-	return &Map{
-		safe:  false,
-		entry: tb.strdict,
-	}
-}
-
 func (tb *LTable) Pickup(vt LValueType, fn func(lv LValue)) {
 	arr := tb.Array()
 	n := len(arr)

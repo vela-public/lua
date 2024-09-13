@@ -870,7 +870,9 @@ func (ls *LState) rkString(idx int) string {
 	if (idx & opBitRk) != 0 {
 		return ls.currentFrame.Fn.Proto.stringConstants[idx & ^opBitRk]
 	}
-	return string(ls.reg.array[ls.currentFrame.LocalBase+idx].(LString))
+
+	val := ls.reg.array[ls.currentFrame.LocalBase+idx]
+	return string(val.(LString))
 }
 
 func (ls *LState) closeUpvalues(idx int) { // +inline-start

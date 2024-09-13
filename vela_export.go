@@ -12,7 +12,7 @@ func (e Export) String() string                 { return e.name }
 func (e Export) Type() LValueType               { return LTObject }
 func (e Export) AssertFloat64() (float64, bool) { return 0, false }
 func (e Export) AssertString() (string, bool)   { return "", false }
-func (e Export) Peek() LValue                   { return e }
+func (e Export) Hijack(*CallFrameFSM) bool      { return false }
 
 func (e Export) AssertFunction() (*LFunction, bool) {
 	if e.fn == nil {

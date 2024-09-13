@@ -94,7 +94,7 @@ func ToLValue(v interface{}) LValue {
 		return converted.ToLValue()
 	}
 
-	return NewAnyData(v)
+	return NewGeneric(v)
 }
 
 func IsString(v LValue) string {
@@ -293,7 +293,7 @@ func JsonMarshal(L *LState, i interface{}) LString {
 	data, e := json.Marshal(i)
 	if e != nil {
 		L.RaiseError("%v", e)
-		return LSNull
+		return EmptyString
 	}
 	return *(*LString)(unsafe.Pointer(&data))
 }

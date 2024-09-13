@@ -183,7 +183,10 @@ func (ukv *userKV) Type() LValueType                   { return LTKv }
 func (ukv *userKV) AssertFloat64() (float64, bool)     { return 0, false }
 func (ukv *userKV) AssertString() (string, bool)       { return "", false }
 func (ukv *userKV) AssertFunction() (*LFunction, bool) { return nil, false }
-func (ukv *userKV) Peek() LValue                       { return ukv }
+func (ukv *userKV) Hijack(*CallFrameFSM) bool          { return false }
+func (ukv *userKV) Index(L *LState, key string) LValue {
+	return ukv.Get(key)
+}
 
 type safeUserKV struct {
 	sync.RWMutex
@@ -307,4 +310,7 @@ func (sukv *safeUserKV) Type() LValueType                   { return LTSkv }
 func (sukv *safeUserKV) AssertFloat64() (float64, bool)     { return 0, false }
 func (sukv *safeUserKV) AssertString() (string, bool)       { return "", false }
 func (sukv *safeUserKV) AssertFunction() (*LFunction, bool) { return nil, false }
-func (sukv *safeUserKV) Peek() LValue                       { return sukv }
+func (sukv *safeUserKV) Hijack(*CallFrameFSM) bool          { return false }
+func (sukv *safeUserKV) Index(L *LState, key string) LValue {
+	return sukv.Get(key)
+}

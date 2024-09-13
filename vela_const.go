@@ -1,5 +1,5 @@
 package lua
 
 const (
-	LSNull = LString("")
+	EmptyString = LString("")
 )
