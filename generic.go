@@ -76,9 +76,39 @@ func (gen *Generic[T]) AssertString() (string, bool) {
 }
 
 func (gen *Generic[T]) AssertFunction() (*LFunction, bool) {
+
+	var a any = gen.Data
+
+	switch vt := a.(type) {
+	case *LFunction:
+		return vt, true
+	case LValue:
+		return vt.AssertFunction()
+	case interface{ AssertFunction() (*LFunction, bool) }:
+		return vt.AssertFunction()
+	case interface{ ToLFunction() *LFunction }:
+		return vt.ToLFunction(), true
+
+	case func():
+		return NewFunction(func(L *LState) int {
+			vt()
+			return 0
+		}), true
+
+	case func() error:
+		return NewFunction(func(L *LState) int {
+			if err := vt(); err != nil {
+				L.Push(S2L(err.Error()))
+				return 1
+			}
+			return 0
+		}), true
+
+	}
 	if v, ok := gen.LValue(); ok {
 		return v.AssertFunction()
 	}
+
 	return nil, false
 }
 
