@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/vela-public/lua"
 	"github.com/vela-public/lua/luakit"
+	"path/filepath"
 )
 
 type Config struct {
@@ -36,5 +38,7 @@ func main() {
 	if err := co.DoFile(file); err != nil {
 		panic(err)
 	}
+
+	fmt.Println(filepath.Dir("/root/index/a.lua"))
 
 }
